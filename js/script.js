@@ -245,32 +245,30 @@ const modalOpenBtn = document.querySelectorAll('[data-modal]'),
       `;
       form.insertAdjacentElement('afterend', statusMessage);
 
-      const request = new XMLHttpRequest();
-      request.open('POST', 'server.php'); // Настройка запроса
-
-      request.setRequestHeader('Content-type', 'application/json'); // Заголовки, которые говорят серверу что приходит. Когда мы используем связку XMLHttpRequest и formData заголовок указывать не нужно, так как он создается автоматически (только для обычного формата данных (НЕ JSON))
       const formData = new FormData(form); // Формируем объект на основании формы заполненной пользователем
 
-      // Для JSON
       const object = {};
       formData.forEach(function(value, key) {
         object[key] = value;
       });
 
-      const json = JSON.stringify(object);
-
-      request.send(json);
-
-      request.addEventListener('load', () => {
-        if (request.status === 200) {
-          console.log(request.response);
-          showThanksModal(message.succes);
-          form.reset();
-          statusMessage.remove();
-        } else {
-          showThanksModal(message.failure);
-        }
-      });
+      fetch('server.php', {
+        method: "POST",
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(object)
+      })
+      .then(data => data.text())
+      .then(data => {
+        console.log(data);
+        showThanksModal(message.succes);
+        statusMessage.remove();
+      }).catch(() => {
+        showThanksModal(message.failure);
+      }).finally(() => {
+        form.reset();
+      })
     });
   }
 
