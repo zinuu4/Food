@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Timer
 
-const deadline = '2023-5-10';
+const deadline = '2023-6-10';
 
 function getTimeRemaining(endtime) {
   let days, hours, minutes, seconds;
@@ -105,8 +105,7 @@ setClock('.timer', deadline);
 // Modal
 
 const modalOpenBtn = document.querySelectorAll('[data-modal]'),
-      modal = document.querySelector('.modal'),
-      modalCloseBtn = document.querySelectorAll('[data-close]');
+      modal = document.querySelector('.modal');
 
   modalOpenBtn.forEach(item => {
     item.addEventListener('click', openModal)
@@ -116,17 +115,13 @@ const modalOpenBtn = document.querySelectorAll('[data-modal]'),
     modal.classList.add('show');
     modal.classList.remove('hide');
     document.body.style.overflow = 'hidden';
-    // clearInterval(modalTimerId);
+    clearInterval(modalTimerId);
   }
   function closeModal() {
     modal.classList.add('hide');
     modal.classList.remove('show');
     document.body.style.overflow = '';
   }
-
-  modalCloseBtn.forEach(item => {
-    item.addEventListener('click', closeModal);
-  });
 
   window.addEventListener("keydown", (e) => {
     if (e.code == 'Escape' && modal.classList.contains('show')) {
@@ -135,12 +130,12 @@ const modalOpenBtn = document.querySelectorAll('[data-modal]'),
   });
 
   modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
+    if (e.target === modal || e.target.getAttribute('data-close') == '') {
       closeModal();
     }
   });
 
-  // const modalTimerId = setTimeout(openModal, 60000);
+  const modalTimerId = setTimeout(openModal, 50000);
 
   function showModalByScroll() {
     if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1) { // Прокрученная часть + та часть, которая сейчас на экране >= высоте странички -1 px(так как без этого не во всех браузерах работает)
@@ -223,4 +218,83 @@ const modalOpenBtn = document.querySelectorAll('[data-modal]'),
     '.menu .container',
     'menu__item'
   ).render();
+
+  // Forms
+
+  const forms = document.querySelectorAll('form')
+  
+  const message = {
+    loading: 'img/form/spinner.svg',
+    succes: 'Спасибо! Мы скоро c вами свяжемся!',
+    failure: 'Что-то пошло не так :('
+  };
+
+  forms.forEach(item => {
+    postData(item);
+  })
+
+  function postData(form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const statusMessage = document.createElement('img');
+      statusMessage.src = message.loading;
+      statusMessage.style.cssText = `
+        display: block;
+        margin: 0 auto;
+      `;
+      form.insertAdjacentElement('afterend', statusMessage);
+
+      const request = new XMLHttpRequest();
+      request.open('POST', 'server.php'); // Настройка запроса
+
+      request.setRequestHeader('Content-type', 'application/json'); // Заголовки, которые говорят серверу что приходит. Когда мы используем связку XMLHttpRequest и formData заголовок указывать не нужно, так как он создается автоматически (только для обычного формата данных (НЕ JSON))
+      const formData = new FormData(form); // Формируем объект на основании формы заполненной пользователем
+
+      // Для JSON
+      const object = {};
+      formData.forEach(function(value, key) {
+        object[key] = value;
+      });
+
+      const json = JSON.stringify(object);
+
+      request.send(json);
+
+      request.addEventListener('load', () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          showThanksModal(message.succes);
+          form.reset();
+          statusMessage.remove();
+        } else {
+          showThanksModal(message.failure);
+        }
+      });
+    });
+  }
+
+  function showThanksModal(message) {
+    const prevModalDialog = document.querySelector('.modal__dialog');
+
+    prevModalDialog.classList.add('hide');
+    openModal();
+
+    const thanksModal = document.createElement('div')
+    thanksModal.classList.add('modal__dialog')
+    thanksModal.innerHTML = `
+      <div class="modal__content">
+        <div class="modal__close" data-close>×</div>
+        <div class="modal__title">${message}</div>
+      </div>
+    `;
+
+    document.querySelector('.modal').append(thanksModal);
+    setTimeout(() => {
+      thanksModal.remove();
+      prevModalDialog.classList.add('show');
+      prevModalDialog.classList.remove('hide');
+      closeModal();
+    }, 2000);
+  }
 });
