@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap&subset=cyrillic-ext');
 @import './variables/variables';
 @import './base.scss';
+@import './base-media';
 
 @import './blocks/header/header';
 @import './blocks/sidepanel/sidepanel';
@@ -12,3 +13,14 @@
 @import './blocks/promotion/promotion';
 @import './blocks/footer/footer';
 @import './blocks/modal/modal';
+
+@import './blocks/header/header-media';
+@import './blocks/sidepanel/sidepanel-media';
+@import './blocks/preview/preview-media';
+@import './blocks/offer/offer-media';
+@import './blocks/calculating/calculating-media';
+@import './blocks/menu/menu-media';
+@import './blocks/order/order-media';
+@import './blocks/promotion/promotion-media';
+@import './blocks/footer/footer-media';
+@import './blocks/modal/modal-media';
