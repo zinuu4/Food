@@ -1,11 +1,12 @@
 import tabs from './modules/tabs';
 import modal from './modules/modal';
 import timer from './modules/timer';
-import cards from './modules/cards';
+// import cards from './modules/cards';
 import calc from './modules/calc';
 import forms from './modules/forms';
 import slider from './modules/slider';
 import { openModal } from './modules/modal';
+import '../scss/style.scss'
 
 window.addEventListener('DOMContentLoaded', () => {
 
@@ -14,7 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
   tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
   modal('[data-modal]', '.modal', modalTimerId);
   timer('.timer', '2023-06-20');
-  cards();
+  // cards();
   calc();
   forms('form', modalTimerId);
   slider({
